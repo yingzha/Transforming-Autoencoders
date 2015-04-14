@@ -21,17 +21,20 @@ class Capsule(object):
             w_bound_rec = numpy.sqrt(6. / (in_dim + recog_dim))
             w_bound_axis = numpy.sqrt(6. / (recog_dim + 1))
             w_bound_gener = numpy.sqrt(6. / (2 + gener_dim))
+            w_bound_out = numpy.sqrt(6. / (gener_dim + in_dim))
             self.activation_func = T.nnet.softmax
         elif activation == 'tanh':
             w_bound_rec = numpy.sqrt(4. * 6. / (in_dim + recog_dim))
             w_bound_axis = numpy.sqrt(4. * 6. / (recog_dim + 1))
             w_bound_gener = numpy.sqrt(4. * 6. / (2 + gener_dim))
+            w_bound_out = numpy.sqrt(4. * 6. / (gener_dim + in_dim))
             self.activation_func = T.tanh
         elif activation == 'relu':
             #should be more elegant
             w_bound_rec = .01
             w_bound_axis = .01
             w_bound_gener= .01
+            w_bound_out = .01
             self.activation_func = lambda x: x * (x > 0)
 
         self.W_rec = theano.shared(value=numpy.asarray(rng.uniform(low=-w_bound_rec,
@@ -97,7 +100,7 @@ class Capsule(object):
         x_axis = self.activation_func(T.dot(rec, self.W_x_axis) + self.b_x_axis)
         y_axis = self.activation_func(T.dot(rec, self.W_y_axis) + self.b_y_axis)
         pro_tmp = T.nnet.sigmoid(T.dot(rec, self.W_pr) + self.b_pr)
-        pro = T.extra_ops.repeat(pro_tmp, 784, axis=1)
+        pro = T.extra_ops.repeat(pro_tmp, self.in_dim, axis=1)
         renew_input = T.concatenate([x_axis, y_axis], axis=1) + extra_input
         gener = self.activation_func(T.dot(renew_input, self.W_gen) + self.b_gen)
         return gener, pro

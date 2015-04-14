@@ -8,18 +8,23 @@ import time
 import os
 import cPickle
 import matplotlib
+import pdb
 class SGDTrain(object):
     def __init__(self, input, extra_input, output, data, model, cost,
-            batch_size=1, init_lr=.001, init_mom=.9):
+            batch_size=500, init_lr=.0001, init_mom=.9):
         self.__dict__.update(locals())
         del self.self
+        del self.cost
+
         self.status = {}
         self.status.update(locals())
         del self.status['self']
         del self.status['model']
 
+        self.cost = cost.mse(output)
+        self.predict = cost.get_output()
         self.params = model.params
-        self.pgrad = T.grad(cost, self.params)
+        self.pgrad = T.grad(self.cost, self.params)
         self.momentum = [theano.shared(param.get_value() * .0)
                          for param in self.params]
         self.batch_num = len(data[0].get_value()) / batch_size
@@ -55,6 +60,16 @@ class SGDTrain(object):
                                    self.output: self.data[2][index*self.batch_size: (index+1)*self.batch_size]
                                    }
                               )
+        return func
+
+    def prediction(self, data):
+        func = theano.function(inputs=[],
+                               outputs=self.predict,
+                               givens={
+                                   self.input: data[0],
+                                   self.extra_input: data[1]
+                                   }
+                               )
         return func
 
     def build_validmodel(self, validset):
@@ -100,6 +115,7 @@ class SGDTrain(object):
             print 'learning_rate {0}, momentum {1}'.format(lr, mom)
             end_time = time.clock()
             print 'Running time: {0}'.format(end_time - start_time)
+            pdb.set_trace()
             valid_cost = self.build_validmodel(validset)()
             test_cost = self.build_testmodel(testset)()
             print 'Epoch {0}, validation cost{1}, test cost{2}'.format(epoch+1, valid_cost, test_cost)

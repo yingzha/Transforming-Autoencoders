@@ -23,5 +23,5 @@ class Cost(object):
     def cross_entropy(self, y):
         return T.mean(T.nnet.categorical_crossentropy(self.y_pred, y))
 
-    def get_ouput(self):
+    def get_output(self):
         return self.y_pred

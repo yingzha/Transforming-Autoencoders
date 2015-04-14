@@ -27,13 +27,6 @@ class SGDTrain(Train):
         self.trainmodel = self.build_trainmodel(learning_rate, momentum)
 
     def set_learning_rate(self, epoch, de_con=1e-3):
-        """
-        parmas
-        ------
-        epoch: int
-        de_con: float
-            decresing constant
-        """
         return self.init_lr / (1. + de_con*epoch)
 
     def set_momentum(self, epoch):
@@ -57,24 +50,36 @@ class SGDTrain(Train):
                                updates=updates,
                                givens={
                                    self.input[0]: self.data[0][index*self.batch_size: (index+1)*self.batch_size],
-                                   self.input[1]: self.data[1][index*self.batch_size: (index+1)*self.batch_size]
-                                      }
+                                   self.input[1]: self.data[1][index*self.batch_size: (index+1)*self.batch_size],
+                                   self.input[2]: self.data[2][index*self.batch_size: (index+1)*self.batch_size]
+                                   }
                               )
         return func
 
-    #def build_validmodel(self, validset, errors):
-    #     index = T.scalar('index')
-    #     func = theano.function(inputs=[index],
-    #                            outputs=errors,
-    #                            givens={
-    #                                self.input[0]: validset[0][index*self.batch_size: (index+1)*self.batch_size],
-    #                                self.input[1]: validset[1][index*self.batch_size: (index+1)*self.batch_size]
-    #                                }
-    #                           )
-    #     return func
+    def build_validmodel(self, validset):
+         func = theano.function(inputs=[],
+                                outputs=self.cost,
+                                givens={
+                                    self.input[0]: validset[0],
+                                    self.input[1]: validset[1],
+                                    self.input[2]: validset[2]
+                                    }
+                               )
+         return func
+
+    def build_testmodel(self, testset):
+        func = theano.function(inputs=[],
+                               outputs=self.cost,
+                               givens={
+                                   self.input[0]: testset[0],
+                                   self.input[1]: testset[1],
+                                   self.input[2]: testset[2]
+                                   }
+                              )
+        return func
 
 
-    def main_loop(self, epochs=30, serialize=False, verbose=False):
+    def main_loop(self, validset, testset, epochs=30, serialize=False, verbose=False):
         best_valid_error = np.inf
         self.status['cost_per_epoch'] = []
         self.status['learning_rate_per_epoch'] = []
@@ -94,7 +99,8 @@ class SGDTrain(Train):
             print 'learning_rate {0}, momentum {1}'.format(lr, mom)
             end_time = time.clock()
             print 'Running time: {0}'.format(end_time - start_time)
-
+            valid_cost = self.build_validmodel(validset)()
+            test_cost = self.build_testmodel(testset)()
             if serialize:
                 self.save_model(epoch)
 

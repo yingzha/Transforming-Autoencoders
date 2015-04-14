@@ -3,6 +3,8 @@ import numpy
 import theano.tensor as T
 
 import Capsule
+import Cost
+from train import SGDTrain
 from utils import load, shared, translation
 
 class TransAE(object):
@@ -35,5 +37,11 @@ if __name__ == "__main__":
     gener_dim = 128
     activation = 'relu'
 
+    input = T.matrix('input')
+    extra_input = T.matrix('extra')
+    output = T.matrix('output')
+
     transae = TransAE(num_capsules, in_dim, recog_dim, gener_dim, activation)
-    #main-loop
+    cost = Cost(transae, input, extra_input).mse(output)
+    model = SGDTrain(input, extra_input, (trans_train, trans, ori_train), transae, cost)
+    model.main_loop(epochs=50)

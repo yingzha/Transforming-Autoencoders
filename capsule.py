@@ -7,7 +7,7 @@ import theano
 import theano.tensor as T
 
 class Capsule(object):
-    #only consider translation
+    #only consider translation now
     def __init__(self, in_dim, recog_dim, gener_dim, activation, rng=None):
         if rng == None:
             rng = numpy.random.RandomState(numpy.random.randint(2015))
@@ -111,9 +111,8 @@ class Capsule(object):
         x_axis = self.activation_func(T.dot(rec, self.W_x_axis) + self.b_x_axis)
         y_axis = self.activation_func(T.dot(rec, self.W_y_axis) + self.b_y_axis)
         pro = T.nnet.sigmoid(T.dot(rec, self.W_pr) + self.b_pr)
-        self.pro = pro
         renew_input = T.concatenate([x_axis, y_axis], axis=1) + extra_input
         gener = self.activation_func(T.dot(renew_input, self.W_gen) + self.b_gen)
-        output = pro * self.activation_func(T.dot(gener, self.W_out) + self.b_out)
-        return output
+        output = self.activation_func(T.dot(gener, self.W_out) + self.b_out)
+        return output, pro
 

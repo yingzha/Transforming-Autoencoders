@@ -38,9 +38,9 @@ if __name__ == "__main__":
     trans_test, shift_test, ori_test = translation(test[0], 28)
     trans_test, shift_test, ori_test = shared((trans_test, shift_test, ori_test))
 
-    num_capsules = 10
+    num_capsules = 30
     in_dim = 784
-    recog_dim = 128
+    recog_dim = 200
     gener_dim = 784
     activation = 'sigmoid'
 
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     extra_input = T.matrix('extra')
     output = T.matrix('output')
     transae = TransAE(num_capsules, in_dim, recog_dim, gener_dim, activation)
-    cost = Cost(transae, input, extra_input).cross_entropy(output)
+    cost = Cost(transae, input, extra_input).mse(output)
     model = SGDTrain(input, extra_input, output, (trans_train, shift_train, ori_train), transae, cost)
     model.main_loop((trans_valid, shift_valid, ori_valid),
                     (trans_test, shift_test, ori_test),

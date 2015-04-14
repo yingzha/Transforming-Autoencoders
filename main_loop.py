@@ -40,9 +40,9 @@ if __name__ == "__main__":
 
     num_capsules = 30
     in_dim = 784
-    recog_dim = 200
+    recog_dim = 1000
     gener_dim = 784
-    activation = 'sigmoid'
+    activation = 'relu'
 
     input = T.matrix('input')
     extra_input = T.matrix('extra')

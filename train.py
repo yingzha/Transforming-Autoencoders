@@ -9,8 +9,8 @@ import os
 import cPickle
 import matplotlib
 class SGDTrain(object):
-    def __init__(self, input1, extra_input, output, data, model, cost,
-            batch_size=50, init_lr=.001, init_mom=.1):
+    def __init__(self, input, extra_input, output, data, model, cost,
+            batch_size=1, init_lr=.001, init_mom=.9):
         self.__dict__.update(locals())
         del self.self
         self.status = {}
@@ -50,7 +50,7 @@ class SGDTrain(object):
                                outputs=self.cost,
                                updates=updates,
                                givens={
-                                   self.input1: self.data[0][index*self.batch_size: (index+1)*self.batch_size],
+                                   self.input: self.data[0][index*self.batch_size: (index+1)*self.batch_size],
                                    self.extra_input: self.data[1][index*self.batch_size: (index+1)*self.batch_size],
                                    self.output: self.data[2][index*self.batch_size: (index+1)*self.batch_size]
                                    }
@@ -61,7 +61,7 @@ class SGDTrain(object):
          func = theano.function(inputs=[],
                                 outputs=self.cost,
                                 givens={
-                                    self.input1: validset[0],
+                                    self.input: validset[0],
                                     self.extra_input: validset[1],
                                     self.output: validset[2]
                                     }
@@ -72,8 +72,8 @@ class SGDTrain(object):
         func = theano.function(inputs=[],
                                outputs=self.cost,
                                givens={
-                                   self.input1: testset[0],
-                                   self.extra_input1: testset[1],
+                                   self.input: testset[0],
+                                   self.extra_input: testset[1],
                                    self.output: testset[2]
                                    }
                               )
@@ -102,7 +102,7 @@ class SGDTrain(object):
             print 'Running time: {0}'.format(end_time - start_time)
             valid_cost = self.build_validmodel(validset)()
             test_cost = self.build_testmodel(testset)()
-            print 'Epoch {0}, validation cost{1}, test cost{2}'.format(valid_cost, test_cost)
+            print 'Epoch {0}, validation cost{1}, test cost{2}'.format(epoch+1, valid_cost, test_cost)
 
             if serialize:
                 self.save_model(epoch)

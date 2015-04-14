@@ -8,9 +8,9 @@ import time
 import os
 import cPickle
 import matplotlib
-
-class SGDTrain(Train):
-    def __init__(self, input, extra_input, data, model, cost, batch_size=1, init_lr=.001, init_mom=.1):
+class SGDTrain(object):
+    def __init__(self, input1, extra_input, output, data, model, cost,
+            batch_size=50, init_lr=.001, init_mom=.1):
         self.__dict__.update(locals())
         del self.self
         self.status = {}
@@ -22,6 +22,7 @@ class SGDTrain(Train):
         self.pgrad = T.grad(cost, self.params)
         self.momentum = [theano.shared(param.get_value() * .0)
                          for param in self.params]
+        self.batch_num = len(data[0].get_value()) / batch_size
         learning_rate = T.scalar('lr')
         momentum = T.scalar('momentum')
         self.trainmodel = self.build_trainmodel(learning_rate, momentum)
@@ -37,7 +38,7 @@ class SGDTrain(Train):
         update_moms = [mom * moment - learning_rate * grad for moment, grad in
                   zip(self.momentum, self.pgrad)]
         updates = [(param, param + update_mom) for param, update_mom in
-                    zip(self._params, update_moms)]
+                    zip(self.params, update_moms)]
         updates.extend([(moment, update_mom) for moment, update_mom in
                          zip(self.momentum, update_moms)])
         return updates
@@ -49,9 +50,9 @@ class SGDTrain(Train):
                                outputs=self.cost,
                                updates=updates,
                                givens={
-                                   self.input[0]: self.data[0][index*self.batch_size: (index+1)*self.batch_size],
-                                   self.input[1]: self.data[1][index*self.batch_size: (index+1)*self.batch_size],
-                                   self.input[2]: self.data[2][index*self.batch_size: (index+1)*self.batch_size]
+                                   self.input1: self.data[0][index*self.batch_size: (index+1)*self.batch_size],
+                                   self.extra_input: self.data[1][index*self.batch_size: (index+1)*self.batch_size],
+                                   self.output: self.data[2][index*self.batch_size: (index+1)*self.batch_size]
                                    }
                               )
         return func
@@ -60,9 +61,9 @@ class SGDTrain(Train):
          func = theano.function(inputs=[],
                                 outputs=self.cost,
                                 givens={
-                                    self.input[0]: validset[0],
-                                    self.input[1]: validset[1],
-                                    self.input[2]: validset[2]
+                                    self.input1: validset[0],
+                                    self.extra_input: validset[1],
+                                    self.output: validset[2]
                                     }
                                )
          return func
@@ -71,9 +72,9 @@ class SGDTrain(Train):
         func = theano.function(inputs=[],
                                outputs=self.cost,
                                givens={
-                                   self.input[0]: testset[0],
-                                   self.input[1]: testset[1],
-                                   self.input[2]: testset[2]
+                                   self.input1: testset[0],
+                                   self.extra_input1: testset[1],
+                                   self.output: testset[2]
                                    }
                               )
         return func
@@ -101,9 +102,10 @@ class SGDTrain(Train):
             print 'Running time: {0}'.format(end_time - start_time)
             valid_cost = self.build_validmodel(validset)()
             test_cost = self.build_testmodel(testset)()
+            print 'Epoch {0}, validation cost{1}, test cost{2}'.format(valid_cost, test_cost)
+
             if serialize:
                 self.save_model(epoch)
-
             if verbose:
                 pass
         print "End training..."

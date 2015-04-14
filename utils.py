@@ -12,7 +12,7 @@ def load(dataset):
     return train_set, valid_set, test_set
 
 def shared(data_xyz, borrow=True):
-    data_x, data_y, data_z= data_xy
+    data_x, data_y, data_z= data_xyz
     shared_x = theano.shared(numpy.asarray(data_x,
                                            dtype=theano.config.floatX),
                              borrow=borrow)

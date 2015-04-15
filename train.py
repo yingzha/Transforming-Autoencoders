@@ -11,7 +11,7 @@ import matplotlib
 import pdb
 class SGDTrain(object):
     def __init__(self, input, extra_input, output, data, model, cost,
-            batch_size=500, init_lr=.0001, init_mom=.9):
+            batch_size=100, init_lr=.0001, init_mom=.0):
         self.__dict__.update(locals())
         del self.self
         del self.cost
@@ -21,7 +21,7 @@ class SGDTrain(object):
         del self.status['self']
         del self.status['model']
 
-        self.cost = cost.mse(output)
+        self.cost = cost.cross_entropy(output)
         self.predict = cost.get_output()
         self.params = model.params
         self.pgrad = T.grad(self.cost, self.params)

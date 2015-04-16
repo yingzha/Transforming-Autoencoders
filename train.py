@@ -11,7 +11,7 @@ import matplotlib
 import pdb
 class SGDTrain(object):
     def __init__(self, input, extra_input, output, data, model, cost,
-            batch_size=100, init_lr=.0001, init_mom=.0):
+            batch_size=100, init_lr=.01, init_mom=.9):
         self.__dict__.update(locals())
         del self.self
         del self.cost
@@ -21,7 +21,7 @@ class SGDTrain(object):
         del self.status['self']
         del self.status['model']
 
-        self.cost = cost.cross_entropy(output)
+        self.cost = cost.mse(output)
         self.predict = cost.get_output()
         self.params = model.params
         self.pgrad = T.grad(self.cost, self.params)
@@ -118,9 +118,9 @@ class SGDTrain(object):
             valid_cost = self.build_validmodel(validset)()
             test_cost = self.build_testmodel(testset)()
             print 'Epoch {0}, validation cost{1}, test cost{2}'.format(epoch+1, valid_cost, test_cost)
-
-            if serialize:
-                self.save_model(epoch)
-            if verbose:
-                pass
+        if serialize:
+            pred = self.prediction(validset)()
+            np.save('pred_result', pred)
+        if verbose:
+            pass
         print "End training..."

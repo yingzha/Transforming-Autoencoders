@@ -6,7 +6,8 @@ from capsule import Capsule
 from cost import Cost
 from train import SGDTrain
 from utils import load, shared, translation
-import pdb
+
+
 class TransAE(object):
     def __init__(self, num_capsules, in_dim, recog_dim, gener_dim, activation, rng=None):
         if rng == None:
@@ -58,4 +59,4 @@ if __name__ == "__main__":
     model = SGDTrain(input, extra_input, output, (trans_train, shift_train, ori_train), transae, cost)
     model.main_loop((trans_valid, shift_valid, ori_valid),
                     (trans_test, shift_test, ori_test),
-                    epochs=100)
+                    epochs=300, serialize=True)

@@ -17,7 +17,7 @@ class Cost(object):
         return sum([(param **2).sum() for param in self.model.params])
 
     def mse(self, y):
-        loss = T.mean(((self.y_pred - y) ** 2).sum())
+        loss = T.mean(((self.y_pred - y) ** 2).sum(axis=1))
         return loss
 
     def cross_entropy(self, y):

@@ -23,8 +23,8 @@ class Capsule(object):
             w_bound_pro = numpy.sqrt(6. / (recog_dim + 1))
             w_bound_gener = numpy.sqrt(6. / (2 + gener_dim))
 
-        self.W_rec = theano.shared(value=numpy.asarray(rng.uniform(low=-w_bound_rec,
-                                                                   high=w_bound_rec,
+        self.W_rec = theano.shared(value=numpy.asarray(rng.uniform(low=-.01,
+                                                                   high=.01,
                                                                    size=(in_dim, recog_dim)),
                                                        dtype=theano.config.floatX),
                                    name='W_rec',
@@ -34,8 +34,8 @@ class Capsule(object):
                                    name='b_rec',
                                    borrow=True)
 
-        self.W_xy_axis = theano.shared(value=numpy.asarray(rng.uniform(low=-w_bound_axis,
-                                                                       high=w_bound_axis,
+        self.W_xy_axis = theano.shared(value=numpy.asarray(rng.uniform(low=-.01,
+                                                                       high=.01,
                                                                        size=(recog_dim, 2)),
                                                           dtype=theano.config.floatX),
                                        name='W_xy_axis',
@@ -44,8 +44,8 @@ class Capsule(object):
                                                          dtype=theano.config.floatX),
                                        name='b_xy_axis',
                                        borrow=True)
-        self.W_pr = theano.shared(value=numpy.asarray(rng.uniform(low=-w_bound_pro,
-                                                                  high=-w_bound_pro,
+        self.W_pr = theano.shared(value=numpy.asarray(rng.uniform(low=-.01,
+                                                                  high=.01,
                                                                   size=(recog_dim, 1)),
                                                       dtype=theano.config.floatX),
                                   name='W_pr',
@@ -56,8 +56,8 @@ class Capsule(object):
                                   borrow=True)
 
 
-        self.W_gen = theano.shared(value=numpy.asarray(rng.uniform(low=-w_bound_gener,
-                                                                   high=w_bound_gener,
+        self.W_gen = theano.shared(value=numpy.asarray(rng.uniform(low=-.01,
+                                                                   high=.01,
                                                                    size=(2, gener_dim)),
                                                        dtype=theano.config.floatX),
                                    name='W_gen',
@@ -67,8 +67,8 @@ class Capsule(object):
                                    name='b_gen',
                                    borrow=True)
 
-        self.W_out = theano.shared(value=numpy.asarray(rng.uniform(low=-.05,
-                                                                   high=-.05,
+        self.W_out = theano.shared(value=numpy.asarray(rng.uniform(low=-.01,
+                                                                   high=.01,
                                                                    size=(gener_dim, in_dim)),
                                                        dtype=theano.config.floatX),
                                    name='W_out',

@@ -38,7 +38,7 @@ class SGDTrain(object):
     def set_momentum(self, epoch):
         return self.init_mom
 
-    def _get_updates(self, learning_rate, mom=.0):
+    def _get_updates(self, learning_rate, mom=.5):
         """update momentum and parameters"""
         update_moms = [mom * moment - learning_rate * grad for moment, grad in
                   zip(self.momentum, self.pgrad)]
@@ -107,7 +107,7 @@ class SGDTrain(object):
             mom =self.set_momentum(epoch)
             for minibatch_index in xrange(self.batch_num):
                 cost = self.trainmodel(minibatch_index, lr, mom)
-                print 'Epoch {0}, minibatch {1}/{2}, cost {3}'.format(epoch+1, minibatch_index, self.batch_num, cost)
+                #print 'Epoch {0}, minibatch {1}/{2}, cost {3}'.format(epoch+1, minibatch_index, self.batch_num, cost)
             self.status['cost_per_epoch'].append(cost)
             self.status['learning_rate_per_epoch'].append(lr)
             self.status['momentum_per_epoch'].append(mom)
@@ -115,7 +115,6 @@ class SGDTrain(object):
             print 'learning_rate {0}, momentum {1}'.format(lr, mom)
             end_time = time.clock()
             print 'Running time: {0}'.format(end_time - start_time)
-            pdb.set_trace()
             valid_cost = self.build_validmodel(validset)()
             test_cost = self.build_testmodel(testset)()
             print 'Epoch {0}, validation cost{1}, test cost{2}'.format(epoch+1, valid_cost, test_cost)

@@ -30,8 +30,8 @@ class TransAE(object):
         for i in xrange(num_capsules):
             out, prob = self.capsules[i].fprop(input, extra_input)
             cap_out.append((out, prob))
-        prob_sum = sum([result[1] for result in cap_out])
-        caps_out = sum([result[0]*result[1]/prob_sum for result in cap_out])
+        #prob_sum = sum([result[1] for result in cap_out])
+        caps_out = sum([result[0]*result[1] for result in cap_out])
         shifted_img = T.nnet.sigmoid(caps_out + self.b_out)
         return shifted_img
 
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     trans_test, shift_test, ori_test = translation(test[0], 28)
     trans_test, shift_test, ori_test = shared((trans_test, shift_test, ori_test))
 
-    num_capsules = 1
+    num_capsules = 30
     in_dim = 784
     recog_dim = 10
     gener_dim = 20
@@ -58,4 +58,4 @@ if __name__ == "__main__":
     model = SGDTrain(input, extra_input, output, (trans_train, shift_train, ori_train), transae, cost)
     model.main_loop((trans_valid, shift_valid, ori_valid),
                     (trans_test, shift_test, ori_test),
-                    epochs=50)
+                    epochs=100)

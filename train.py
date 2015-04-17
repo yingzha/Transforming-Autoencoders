@@ -119,8 +119,12 @@ class SGDTrain(object):
             test_cost = self.build_testmodel(testset)()
             print 'Epoch {0}, validation cost{1}, test cost{2}'.format(epoch+1, valid_cost, test_cost)
         if serialize:
-            pred = self.prediction(validset)()
-            np.save('pred_result', pred)
+            pred_valid = self.prediction(validset)()
+            pred_test = self.prediction(testset)()
+            np.save('pred_valid', pred_valid)
+            np.save('pred_test', pred_test)
+            np.save('valid_imgs', np.asarray(validset))
+            np.save('test_imgs', np.asarray(testset))
         if verbose:
             pass
         print "End training..."

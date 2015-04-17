@@ -45,7 +45,7 @@ if __name__ == "__main__":
     trans_test, shift_test, ori_test = translation(test[0], 28)
     trans_test, shift_test, ori_test = shared((trans_test, shift_test, ori_test))
 
-    num_capsules = 30
+    num_capsules = 100
     in_dim = 784
     recog_dim = 10
     gener_dim = 20
@@ -59,4 +59,4 @@ if __name__ == "__main__":
     model = SGDTrain(input, extra_input, output, (trans_train, shift_train, ori_train), transae, cost)
     model.main_loop((trans_valid, shift_valid, ori_valid),
                     (trans_test, shift_test, ori_test),
-                    epochs=300, serialize=True)
+                    epochs=1000, serialize=True)

@@ -6,7 +6,7 @@ import theano
 import theano.tensor as T
 import time
 import os
-import cPickle
+import cPickle as pickle
 import matplotlib
 import pdb
 class SGDTrain(object):
@@ -118,6 +118,9 @@ class SGDTrain(object):
             valid_cost = self.build_validmodel(validset)()
             test_cost = self.build_testmodel(testset)()
             print 'Epoch {0}, validation cost{1}, test cost{2}'.format(epoch+1, valid_cost, test_cost)
+
+        self.status['params'] = self.params
+
         if serialize:
             pred_valid = self.prediction(validset)()
             pred_test = self.prediction(testset)()
@@ -125,6 +128,11 @@ class SGDTrain(object):
             np.save('pred_test', pred_test)
             np.save('valid_imgs', np.asarray(validset))
             np.save('test_imgs', np.asarray(testset))
+
+            out = open('model.pkl', 'wb')
+            pickle.dump(self.model, out)
+            out.close()
+
         if verbose:
             pass
         print "End training..."

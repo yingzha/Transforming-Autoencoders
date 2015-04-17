@@ -56,7 +56,7 @@ if __name__ == "__main__":
     output = T.matrix('output')
     transae = TransAE(num_capsules, in_dim, recog_dim, gener_dim, activation)
     cost = Cost(transae, input, extra_input)
-    model = SGDTrain(input, extra_input, output, (trans_train, shift_train, ori_train), transae, cost)
-    model.main_loop((trans_valid, shift_valid, ori_valid),
+    train = SGDTrain(input, extra_input, output, (trans_train, shift_train, ori_train), transae, cost)
+    train.main_loop((trans_valid, shift_valid, ori_valid),
                     (trans_test, shift_test, ori_test),
                     epochs=1000, serialize=True)

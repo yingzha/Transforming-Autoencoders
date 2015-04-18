@@ -100,6 +100,8 @@ class SGDTrain(object):
         self.status['cost_per_epoch'] = []
         self.status['learning_rate_per_epoch'] = []
         self.status['momentum_per_epoch'] = []
+        self.status['pred_valid'] = []
+        self.status['pred_test'] = []
         print "Start training..."
         for epoch in range(epochs):
             start_time = time.clock()
@@ -107,7 +109,6 @@ class SGDTrain(object):
             mom =self.set_momentum(epoch)
             for minibatch_index in xrange(self.batch_num):
                 cost = self.trainmodel(minibatch_index, lr, mom)
-                #print 'Epoch {0}, minibatch {1}/{2}, cost {3}'.format(epoch+1, minibatch_index, self.batch_num, cost)
             self.status['cost_per_epoch'].append(cost)
             self.status['learning_rate_per_epoch'].append(lr)
             self.status['momentum_per_epoch'].append(mom)
@@ -117,6 +118,8 @@ class SGDTrain(object):
             print 'Running time: {0}'.format(end_time - start_time)
             valid_cost = self.build_validmodel(validset)()
             test_cost = self.build_testmodel(testset)()
+            self.status['pred_valid'].append(valid_cost)
+            self.status['pred_test'].append(test_cost)
             print 'Epoch {0}, validation cost{1}, test cost{2}'.format(epoch+1, valid_cost, test_cost)
 
         self.status['params'] = self.params
@@ -130,7 +133,7 @@ class SGDTrain(object):
             np.save('test_imgs', np.asarray(testset))
 
             out = open('model.pkl', 'wb')
-            pickle.dump(self.model, out)
+            pickle.dump(self.status, out)
             out.close()
 
         if verbose:
